@@ -114,6 +114,7 @@ private:
 
     void update()
     {
+        m_game->update();
     }
 
     void render()

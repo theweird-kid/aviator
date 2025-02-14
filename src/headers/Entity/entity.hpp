@@ -12,6 +12,8 @@ public:
     {
         PLAYER,
         OBSTACLE,
+        PIPE_UPPER,
+        PIPE_LOWER
     };
 
 public:
@@ -22,8 +24,13 @@ public:
         m_x(x), m_y(y), m_width(width), m_height(height)
     {
         if(m_type == Type::PLAYER) {
-            m_Xvelocity = 5.0f;
+            m_Xvelocity = 0.0f;
             m_Yvelocity = 5.0f;
+        }
+
+        if(m_type == Type::PIPE_LOWER || m_type == Type::PIPE_UPPER) {
+            m_Xvelocity = -10.0f;
+            m_Yvelocity = 0.0f;
         }
     }
 
@@ -88,15 +95,17 @@ public:
         }
     }
 
-    void render()
+    void render(const SDL_Rect& camera)
     {
         update();
-        m_texture->render(m_x, m_y);
+
+        SDL_Rect dstRect = { static_cast<int>(m_x) - camera.x, static_cast<int>(m_y) - camera.y, static_cast<int>(m_width), static_cast<int>(m_height) };
+        m_texture->render(dstRect.x, dstRect.y);
     }
 
     void update()
     {
-        if(this->m_type != Type::PLAYER) return;
+        //if(this->m_type != Type::PLAYER) return;
         m_x += m_Xvelocity;
         m_y += m_Yvelocity;
 
@@ -114,12 +123,21 @@ public:
 
     float getX() const { return m_x; }
     float getY() const { return m_y; }
+    void setX(float x) { m_x = x; }
+    void setY(float y) { m_y = y; }
 
     float getWidth() const { return m_width; }
     float getHeight() const { return m_height; }
+    void setWidth(float width) { m_width = width; }
+    void setHeight(float height) { m_height = height; }
 
     float getXVelocity() const { return m_Xvelocity; }
     float getYVelocity() const { return m_Yvelocity; }
+    void setXVelocity(float xVelocity) { m_Xvelocity = xVelocity; }
+    void setYVelocity(float yVelocity) { m_Yvelocity = yVelocity; }
+
+    bool isAlive() const { return b_alive; }
+    void setAlive(bool alive) { b_alive = alive; }
 
 private:
     std::unique_ptr<Texture> m_texture;         // Texture Class
@@ -128,6 +146,9 @@ private:
     float m_x, m_y;                         // Position
     float m_width, m_height;                // Size
     float m_Xvelocity, m_Yvelocity;         // Velocity
+
+    // Status Flags
+    bool b_alive = true;
 };
 
 #endif // ENTITY_HPP
